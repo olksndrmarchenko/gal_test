@@ -12,11 +12,19 @@ FEATURE INT,
 DISPLAY INT,
 TPR_ONLY INT);
 
-
 COPY transactions(WEEK_END_DATE,STORE_NUM,UPC,UNITS,VISITS,HHS,SPEND,PRICE,BASE_PRICE,FEATURE,DISPLAY,TPR_ONLY) from '/home/olksndr/project/transactions.csv' DELIMITER ',' CSV HEADER;
 
-create table products (U
-PC BIGINT, 
+alter table transactions 
+rename price to stock_price ;
+alter table transactions 
+RENAME base_price to price;
+
+update transactions
+set spend = price * units;
+
+
+create table products (
+UPC BIGINT, 
 DESCRIPTION TEXT, 
 MANUFACTURER TEXT, 
 CATEGORY TEXT, 
@@ -24,10 +32,22 @@ SUB_CATEGORY TEXT,
 PRODUCT_SIZE TEXT);
 
 
-COPY transactions(UPC,DESCRIPTION,MANUFACTURER,CATEGORY,SUB_CATEGORY,PRODUCT_SIZE) from '/home/olksndr/project/transactions.csv' DELIMITER ',' CSV HEADER;
-
-select * from transactions LEFT JOIN products on transactions.UPC = products.UPC limit 25 ## left join
+COPY products(UPC,DESCRIPTION,MANUFACTURER,CATEGORY,SUB_CATEGORY,PRODUCT_SIZE) from '/home/olksndr/project/products.csv' DELIMITER ',' CSV HEADER;
 
 
-SELECT (store_num, SUM(spend)) from transactions where upc = 1111009477 GROUP BY store_num order by SUM(spend) desc;
+create table stores(
+STORE_ID BIGINT,
+STORE_NAME TEXT,
+ADDRESS_CITY_NAME TEXT,
+ADDRESS_STATE_PROV_CODE TEXT,
+MSA_CODE TEXT,
+SEG_VALUE_NAME TEXT,
+PARKING_SPACE_QTY BIGINT,
+SALES_AREA_SIZE_NUM BIGINT,
+AVG_WEEKLY_BASKETS BIGINT);
+
+COPY stores(STORE_ID,STORE_NAME,ADDRESS_CITY_NAME,ADDRESS_STATE_PROV_CODE,MSA_CODE,SEG_VALUE_NAME,PARKING_SPACE_QTY,SALES_AREA_SIZE_NUM,AVG_WEEKLY_BASKETS) from '/home/olksndr/project/stores.csv' DELIMITER ',' CSV HEADER;
+
+alter table stores
+rename store_id to store_num;
 
