@@ -1,4 +1,0 @@
-select * from transactions LEFT JOIN products on transactions.UPC = products.UPC limit 25 ## left join
-
-
-SELECT (store_num, SUM(spend)) from transactions where upc = 1111009477 GROUP BY store_num order by SUM(spend) desc;
